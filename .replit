@@ -1,0 +1,5 @@
+language = "python3"
+run = "python app.py"
+
+[env]
+SECRET_KEY = "your-very-secret-key-here"
