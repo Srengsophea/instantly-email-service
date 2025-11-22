@@ -1,5 +1,5 @@
 language = "python3"
-run = "bash start.sh"
+run = "python main.py"
 
 [env]
 SECRET_KEY = "your-very-secret-key-here"

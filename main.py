@@ -93,6 +93,10 @@ def index():
         return render_template('dashboard.html', user=user, emails=recent_emails, all_emails_count=len(user_emails), domains=available_domains)
     return render_template('index.html')
 
+@app.route('/health')
+def health_check():
+    return jsonify({'status': 'ok', 'message': 'Application is running'})
+
 @app.route('/my-emails')
 @login_required
 def my_emails():
