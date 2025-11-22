@@ -40,6 +40,57 @@
         }
         .navbar {
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            padding: 0.5rem 1rem;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand:hover {
+            color: #f8f9fa !important;
+        }
+        .navbar-toggler {
+            border: none;
+            color: white;
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin: 0 0.25rem;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .dropdown-toggle {
+            cursor: pointer;
+            color: white !important;
+            font-weight: 500;
+        }
+        .dropdown-menu {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 0.5rem;
+        }
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+        }
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+        }
+        .dropdown-divider {
+            margin: 0.5rem 0;
         }
         .user-avatar {
             width: 40px;
@@ -164,6 +215,17 @@
             .setting-description {
                 font-size: 0.8rem;
             }
+            .user-avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
+            }
+            .navbar-brand h3 {
+                font-size: 1.25rem;
+            }
+            .card-header h3 {
+                font-size: 1.25rem;
+            }
         }
         
         @media (max-width: 576px) {
@@ -185,6 +247,42 @@
             }
             .section-title::after {
                 width: 30px;
+            }
+            .modal-dialog {
+                margin: 1rem;
+            }
+            .modal-header h5 {
+                font-size: 1.125rem;
+            }
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 400px) {
+            .header-section {
+                padding: 0.75rem;
+            }
+            .display-4 {
+                font-size: 1.5rem;
+            }
+            .lead {
+                font-size: 0.875rem;
+            }
+            .section-title {
+                font-size: 1.125rem;
+            }
+            .card-header h3 {
+                font-size: 1.125rem;
+            }
+            .btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            .form-control {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.8125rem;
+            }
+            .setting-item {
+                padding: 0.75rem 0;
             }
         }
     </style>
@@ -226,6 +324,9 @@
                     </div>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        {% if user.is_admin %}
+                        <li><a class="dropdown-item" href="/admin"><i class="fas fa-cog me-2"></i>Admin Panel</a></li>
+                        {% endif %}
                         <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"><i class="fas fa-key me-2"></i>Change Password</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>

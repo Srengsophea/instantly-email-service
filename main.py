@@ -73,10 +73,35 @@ def get_available_domains():
 users = load_users()
 email_accounts = load_email_accounts()
 
+# Create default admin account if no users exist
+if not users:
+    admin_id = str(uuid.uuid4())
+    users[admin_id] = {
+        'id': admin_id,
+        'username': 'khsophea20@gmail.com',
+        'password': '@Sp18052005',  # In production, use a secure password
+        'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'is_admin': True
+    }
+    save_users(users)
+    print("Default admin account created: admin / admin123")
+
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('index'))
+        user = users.get(session['user_id'], {})
+        if not user.get('is_admin', False):
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
@@ -113,6 +138,7 @@ def signup():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    is_admin = data.get('is_admin', False)  # Only allow admin creation through special parameter
     
     if not username or not password:
         return jsonify({'success': False, 'error': 'Username and password are required'})
@@ -130,6 +156,10 @@ def signup():
         'password': password,  # In production, hash the password
         'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
+    
+    # Add admin flag if requested (in production, this should be protected)
+    if is_admin:
+        users[user_id]['is_admin'] = True
     
     # Save users
     save_users(users)
@@ -155,6 +185,23 @@ def login():
             return jsonify({'success': True, 'message': 'Login successful'})
     
     return jsonify({'success': False, 'error': 'Invalid username or password'})
+
+@app.route('/admin/login', methods=['POST'])
+def admin_login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not username or not password:
+        return jsonify({'success': False, 'error': 'Username and password are required'})
+    
+    # Find user and check if admin
+    for user_id, user in users.items():
+        if user['username'] == username and user['password'] == password and user.get('is_admin', False):
+            session['user_id'] = user_id
+            return jsonify({'success': True, 'message': 'Admin login successful'})
+    
+    return jsonify({'success': False, 'error': 'Invalid admin credentials'})
 
 @app.route('/logout')
 def logout():
@@ -236,6 +283,152 @@ def profile():
     user_id = session['user_id']
     user = users.get(user_id, {})
     return render_template('profile.html', user=user)
+
+@app.route('/admin')
+@admin_required
+def admin():
+    # Get current user
+    user_id = session['user_id']
+    current_user = users.get(user_id, {})
+    # Get all users
+    all_users = list(users.values())
+    # Get all email accounts
+    all_emails = email_accounts
+    return render_template('admin.html', user=current_user, users=all_users, emails=all_emails)
+
+@app.route('/admin/users')
+@admin_required
+def admin_users():
+    all_users = list(users.values())
+    return jsonify({'users': all_users})
+
+@app.route('/admin/emails')
+@admin_required
+def admin_emails():
+    return jsonify({'emails': email_accounts})
+
+@app.route('/admin/get_inbox/<email_id>')
+@admin_required
+def admin_get_inbox(email_id):
+    try:
+        # Reload accounts from file
+        global email_accounts
+        email_accounts = load_email_accounts()
+        
+        # Find the email account (no ownership verification for admin)
+        email_account = None
+        for account in email_accounts:
+            if account['id'] == email_id:
+                email_account = account
+                break
+        
+        if not email_account:
+            return jsonify({'success': False, 'error': 'Email account not found'})
+        
+        # Use Mail.tm API to get inbox messages
+        headers = {
+            'Authorization': f'Bearer {email_account["token"]}',
+            'Content-Type': 'application/json'
+        }
+        
+        response = requests.get(
+            f'{MAIL_TM_API_URL}/messages',
+            headers=headers
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            messages = data.get('hydra:member', [])
+            return jsonify({'success': True, 'messages': messages})
+        else:
+            return jsonify({'success': True, 'messages': []})
+            
+    except Exception as e:
+        return jsonify({'success': True, 'messages': []})
+
+@app.route('/admin/delete_user/<user_id>', methods=['POST'])
+@admin_required
+def admin_delete_user(user_id):
+    global users
+    if user_id in users:
+        # Delete user
+        del users[user_id]
+        # Delete all emails associated with this user
+        global email_accounts
+        email_accounts = [email for email in email_accounts if email.get('user_id') != user_id]
+        # Save changes
+        save_users(users)
+        save_email_accounts(email_accounts)
+        return jsonify({'success': True, 'message': 'User and associated emails deleted successfully'})
+    return jsonify({'success': False, 'error': 'User not found'})
+
+@app.route('/admin/delete_email/<email_id>', methods=['POST'])
+@admin_required
+def admin_delete_email(email_id):
+    global email_accounts
+    # Find and remove the email account
+    email_account = None
+    for i, account in enumerate(email_accounts):
+        if account['id'] == email_id:
+            email_account = account
+            # Remove the email account
+            email_accounts.pop(i)
+            break
+    
+    if email_account:
+        # Save updated email accounts
+        save_email_accounts(email_accounts)
+        return jsonify({'success': True, 'message': 'Email deleted successfully'})
+    return jsonify({'success': False, 'error': 'Email account not found'})
+
+@app.route('/admin/add_admin', methods=['POST'])
+@admin_required
+def admin_add_admin():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not username or not password:
+        return jsonify({'success': False, 'error': 'Username and password are required'})
+    
+    # Check if user already exists
+    for user_id, user in users.items():
+        if user['username'] == username:
+            return jsonify({'success': False, 'error': 'Username already exists'})
+    
+    # Create new admin user
+    user_id = str(uuid.uuid4())
+    users[user_id] = {
+        'id': user_id,
+        'username': username,
+        'password': password,  # In production, hash the password
+        'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'is_admin': True
+    }
+    
+    # Save users
+    save_users(users)
+    
+    return jsonify({'success': True, 'message': 'Admin user created successfully'})
+
+@app.route('/admin/remove_admin/<user_id>', methods=['POST'])
+@admin_required
+def admin_remove_admin(user_id):
+    global users
+    if user_id in users:
+        user = users[user_id]
+        # Prevent removing the last admin
+        admin_count = sum(1 for u in users.values() if u.get('is_admin', False))
+        if admin_count <= 1 and user.get('is_admin', False):
+            return jsonify({'success': False, 'error': 'Cannot remove the last admin user'})
+        
+        # Remove admin privileges
+        if 'is_admin' in user:
+            del user['is_admin']
+            users[user_id] = user
+            save_users(users)
+            return jsonify({'success': True, 'message': 'Admin privileges removed successfully'})
+    return jsonify({'success': False, 'error': 'User not found'})
 
 @app.route('/generate_email', methods=['POST'])
 @login_required

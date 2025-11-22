@@ -2,7 +2,7 @@ import sys
 import os
 
 # Add your project directory to the path
-path = '/home/srengsophea/instantly-email-service'
+path = '/home/srengsophea/instantly'
 if path not in sys.path:
     sys.path.append(path)
 

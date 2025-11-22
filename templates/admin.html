@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Instantly</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding-top: 2rem;
+        }
+        .main-content {
+            padding: 2rem;
+        }
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: none;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .navbar {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            padding: 0.5rem 1rem;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand:hover {
+            color: #f8f9fa !important;
+        }
+        .navbar-toggler {
+            border: none;
+            color: white;
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin: 0 0.25rem;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .dropdown-toggle {
+            cursor: pointer;
+            color: white !important;
+            font-weight: 500;
+        }
+        .dropdown-menu {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 0.5rem;
+        }
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+        }
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+        }
+        .dropdown-divider {
+            margin: 0.5rem 0;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-outline-primary {
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        .section-title {
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+        }
+        .stats-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .stats-card i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .user-table, .email-table {
+            width: 100%;
+        }
+        .user-table th, .email-table th {
+            background-color: #f1f3ff;
+        }
+        .user-table td, .email-table td {
+            vertical-align: middle;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            .header-section {
+                padding: 1.5rem;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            .btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.875rem;
+            }
+            .section-title {
+                font-size: 1.25rem;
+            }
+            .display-4 {
+                font-size: 2rem;
+            }
+            .lead {
+                font-size: 1rem;
+            }
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+            .table-responsive .btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+                margin: 0.125rem;
+            }
+            .user-avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 0.75rem;
+            }
+            .navbar-brand h3 {
+                font-size: 1.25rem;
+            }
+            .card-header h3 {
+                font-size: 1.25rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container-fluid {
+                padding: 0 0.5rem;
+            }
+            .header-section {
+                padding: 1rem;
+            }
+            .card {
+                margin-bottom: 1rem;
+            }
+            .section-title::after {
+                width: 30px;
+            }
+            .table-responsive .btn {
+                display: block;
+                width: 100%;
+                margin-bottom: 0.25rem;
+            }
+            .btn-sm {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            .form-label {
+                font-size: 0.875rem;
+            }
+            .form-control {
+                font-size: 0.875rem;
+                padding: 0.375rem 0.75rem;
+            }
+            .modal-dialog {
+                margin: 1rem;
+            }
+            .modal-header h5 {
+                font-size: 1.125rem;
+            }
+        }
+        
+        /* Extra small devices */
+        @media (max-width: 400px) {
+            .header-section {
+                padding: 0.75rem;
+            }
+            .display-4 {
+                font-size: 1.5rem;
+            }
+            .lead {
+                font-size: 0.875rem;
+            }
+            .section-title {
+                font-size: 1.125rem;
+            }
+            .card-header h3 {
+                font-size: 1.125rem;
+            }
+            .table-responsive {
+                font-size: 0.75rem;
+            }
+            .table-responsive .btn {
+                padding: 0.25rem;
+                font-size: 0.625rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin">
+                <h3 class="mb-0">Instantly Admin</h3>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                </ul>
+                <div class="dropdown">
+                    <div class="d-flex align-items-center dropdown-toggle" role="button" data-bs-toggle="dropdown">
+                        <div class="user-avatar me-3">
+                            {{ user.username[0].upper() }}
+                        </div>
+                        <span class="me-3">{{ user.username }} (Admin)</span>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/"><i class="fas fa-user me-2"></i>User Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-12 col-md-12 main-content">
+                <!-- Header Section -->
+                <div class="header-section text-center">
+                    <h1 class="display-4 mb-3">Admin Dashboard</h1>
+                    <p class="lead">Manage all users and email accounts</p>
+                </div>
+                
+                <!-- Add Admin Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-white">
+                        <h3 class="mb-0">Add New Admin</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="addAdminForm">
+                            <div class="row">
+                                <div class="col-md-5 mb-3">
+                                    <label for="adminUsername" class="form-label">Admin Username</label>
+                                    <input type="text" class="form-control" id="adminUsername" placeholder="Enter admin username" required>
+                                </div>
+                                <div class="col-md-5 mb-3">
+                                    <label for="adminPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="adminPassword" placeholder="Enter password" required>
+                                </div>
+                                <div class="col-md-2 mb-3 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">Add Admin</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="stats-card">
+                                <i class="fas fa-users fa-2x text-primary"></i>
+                                <h4>{{ users|length }}</h4>
+                                <p class="mb-0">Total Users</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="stats-card">
+                                <i class="fas fa-envelope-open-text fa-2x text-success"></i>
+                                <h4>{{ emails|length }}</h4>
+                                <p class="mb-0">Total Emails</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="stats-card">
+                                <i class="fas fa-server fa-2x text-info"></i>
+                                <h4>Active</h4>
+                                <p class="mb-0">System Status</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Users Section -->
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h3 class="mb-0">All Users</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table user-table">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Role</th>
+                                        <th>Created At</th>
+                                        <th>Email Count</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>
+                                            {% if user.is_admin %}
+                                                <span class="badge bg-success">Admin</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">User</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ user.created_at }}</td>
+                                        <td>
+                                            {% set email_count = 0 %}
+                                            {% for email in emails %}
+                                                {% if email.user_id == user.id %}
+                                                    {% set email_count = email_count + 1 %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {{ email_count }}
+                                        </td>
+                                        <td>
+                                            {% if user.is_admin %}
+                                                <button class="btn btn-sm btn-outline-warning remove-admin" data-user-id="{{ user.id }}">
+                                                    <i class="fas fa-user-times me-1"></i>Remove Admin
+                                                </button>
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-outline-danger delete-user" data-user-id="{{ user.id }}">
+                                                <i class="fas fa-trash me-1"></i>Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Emails Section -->
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h3 class="mb-0">All Email Accounts</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if emails %}
+                            <div class="row">
+                                {% for email in emails %}
+                                    <div class="col-xl-4 col-lg-6 col-md-6 mb-3">
+                                        <div class="card email-card h-100">
+                                            <div class="card-body d-flex flex-column">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h5 class="card-title mb-0 text-truncate" style="max-width: 80%">{{ email.address }}</h5>
+                                                    <span class="badge bg-primary ms-2">{{ email.domain }}</span>
+                                                </div>
+                                                <p class="card-text text-muted mb-1">
+                                                    <small><i class="fas fa-user me-1"></i>Owner: 
+                                                        {% set owner = "" %}
+                                                        {% for u in users %}
+                                                            {% if u.id == email.user_id %}
+                                                                {% set owner = u.username %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        {% if owner %}
+                                                            {{ owner }}
+                                                        {% else %}
+                                                            Unknown
+                                                        {% endif %}
+                                                    </small>
+                                                </p>
+                                                <p class="card-text text-muted mb-3">
+                                                    <small><i class="fas fa-calendar me-1"></i>Created: {{ email.created_at }}</small>
+                                                </p>
+                                                <div class="mt-auto">
+                                                    <button class="btn btn-sm btn-outline-primary check-inbox w-100 mb-2" data-email-id="{{ email.id }}">
+                                                        <i class="fas fa-envelope me-1"></i>Check Inbox
+                                                    </button>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-sm btn-outline-danger delete-email flex-fill" data-email-id="{{ email.id }}">
+                                                            <i class="fas fa-trash me-1"></i>Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-envelope-open-text fa-3x text-muted mb-3"></i>
+                                <h5>No email accounts found</h5>
+                                <p class="text-muted">Users have not created any temporary email addresses yet</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Delete user button
+            document.querySelectorAll('.delete-user').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    if (confirm('Are you sure you want to delete this user and all their email accounts? This action cannot be undone.')) {
+                        fetch(`/admin/delete_user/${userId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('User deleted successfully!');
+                                location.reload();
+                            } else {
+                                alert('Error: ' + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error deleting user');
+                        });
+                    }
+                });
+            });
+            
+            // Remove admin button
+            document.querySelectorAll('.remove-admin').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    if (confirm('Are you sure you want to remove admin privileges from this user?')) {
+                        fetch(`/admin/remove_admin/${userId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Admin privileges removed successfully!');
+                                location.reload();
+                            } else {
+                                alert('Error: ' + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error removing admin privileges');
+                        });
+                    }
+                });
+            });
+            
+            // Delete email button
+            document.querySelectorAll('.delete-email').forEach(button => {
+                button.addEventListener('click', function() {
+                    const emailId = this.getAttribute('data-email-id');
+                    if (confirm('Are you sure you want to delete this email account? This action cannot be undone.')) {
+                        fetch(`/admin/delete_email/${emailId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Email deleted successfully!');
+                                location.reload();
+                            } else {
+                                alert('Error: ' + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error deleting email');
+                        });
+                    }
+                });
+            });
+            
+            // Check inbox button
+            document.querySelectorAll('.check-inbox').forEach(button => {
+                button.addEventListener('click', function() {
+                    const emailId = this.getAttribute('data-email-id');
+                    // Get email address from the card title
+                    const emailCard = this.closest('.card');
+                    const emailAddrElement = emailCard.querySelector('.card-title');
+                    const emailAddr = emailAddrElement ? emailAddrElement.textContent.trim() : 'Unknown Email';
+                    
+                    // Show loading indicator
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Loading...';
+                    this.disabled = true;
+                    
+                    fetch(`/admin/get_inbox/${emailId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                            
+                            if (data.success) {
+                                // Create modal to display inbox
+                                let modalHtml = `
+                                <div class="modal fade" id="inboxModal" tabindex="-1" aria-labelledby="inboxModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="inboxModalLabel">Inbox for ${emailAddr}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                `;
+                                
+                                if (data.messages && data.messages.length > 0) {
+                                    modalHtml += `
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>From</th>
+                                                    <th>Subject</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                    `;
+                                    
+                                    data.messages.forEach(message => {
+                                        const from = message.from ? message.from.name + ' <' + message.from.address + '>' : 'Unknown';
+                                        const subject = message.subject || '(No subject)';
+                                        const date = message.createdAt || '';
+                                        
+                                        modalHtml += `
+                                            <tr>
+                                                <td>${from}</td>
+                                                <td>${subject}</td>
+                                                <td>${date}</td>
+                                            </tr>
+                                        `;
+                                    });
+                                    
+                                    modalHtml += `
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    `;
+                                } else {
+                                    modalHtml += '<p class="text-center">No messages in inbox.</p>';
+                                }
+                                
+                                modalHtml += `
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                `;
+                                
+                                // Remove existing modal if any
+                                const existingModal = document.getElementById('inboxModal');
+                                if (existingModal) {
+                                    existingModal.remove();
+                                }
+                                
+                                // Add modal to body
+                                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                                
+                                // Show modal
+                                const modal = new bootstrap.Modal(document.getElementById('inboxModal'));
+                                modal.show();
+                                
+                                // Remove modal from DOM when closed
+                                document.getElementById('inboxModal').addEventListener('hidden.bs.modal', function () {
+                                    this.remove();
+                                });
+                            } else {
+                                alert('Error: ' + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                            alert('Error checking inbox');
+                        });
+                });
+            });
+            
+            // Add admin form submission
+            const addAdminForm = document.getElementById('addAdminForm');
+            if (addAdminForm) {
+                addAdminForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const username = document.getElementById('adminUsername').value;
+                    const password = document.getElementById('adminPassword').value;
+                    
+                    if (!username || !password) {
+                        alert('Please fill in all fields');
+                        return;
+                    }
+                    
+                    if (password.length < 6) {
+                        alert('Password must be at least 6 characters long');
+                        return;
+                    }
+                    
+                    fetch('/admin/add_admin', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Admin user created successfully!');
+                            addAdminForm.reset();
+                            location.reload();
+                        } else {
+                            alert('Error: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error creating admin user');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

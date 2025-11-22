@@ -109,20 +109,20 @@ SMTPdev/
 
 2. Clone your GitHub repository in a PythonAnywhere console:
    ```bash
-   git clone https://github.com/Srengsophea/instantly-email-service.git
+   git clone https://github.com/Srengsophea/instantly-email-service.git instantly
    ```
 
 3. Create a virtual environment and install dependencies:
    ```bash
    mkvirtualenv instantly --python=/usr/bin/python3.9
-   pip install -r instantly-email-service/requirements.txt
+   pip install -r instantly/requirements.txt
    ```
 
 4. Go to the "Web" tab and create a new web app with manual configuration
 
 5. Set the following configuration:
-   - Source code: `/home/srengsophea/instantly-email-service`
-   - Working directory: `/home/srengsophea/instantly-email-service`
+   - Source code: `/home/srengsophea/instantly`
+   - Working directory: `/home/srengsophea/instantly`
    - Virtual environment: `/home/srengsophea/.virtualenvs/instantly`
    - WSGI configuration file: Replace the content with the code from `instantly_wsgi.py` in your repository
 
