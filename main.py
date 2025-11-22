@@ -356,7 +356,9 @@ def get_inbox(email_id):
         return jsonify({'success': True, 'messages': []})
 
 if __name__ == '__main__':
-    # Handle Replit's PORT environment variable
-    port = int(os.environ.get('PORT', 5000))
-    print(f"Starting server on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    # Only run the development server if not on PythonAnywhere
+    if 'PYTHONANYWHERE_DOMAIN' not in os.environ:
+        # Handle Replit's PORT environment variable
+        port = int(os.environ.get('PORT', 5000))
+        print(f"Starting server on port {port}")
+        app.run(host='0.0.0.0', port=port, debug=False)
