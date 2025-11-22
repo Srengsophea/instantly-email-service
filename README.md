@@ -130,6 +130,34 @@ SMTPdev/
 
 7. Your application should now be accessible at `https://srengsophea.pythonanywhere.com`
 
+## Updating PythonAnywhere Deployment
+
+To update your PythonAnywhere deployment with the latest changes:
+
+1. SSH into your PythonAnywhere account or use the PythonAnywhere console
+
+2. Navigate to your project directory:
+   ```bash
+   cd ~/instantly
+   ```
+
+3. Pull the latest changes from GitHub:
+   ```bash
+   git pull origin main
+   ```
+
+4. Install any new dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Reload your web application from the PythonAnywhere Web tab
+
+Alternatively, you can use the provided update script:
+```bash
+python update_pythonanywhere.py
+```
+
 ## Contributing
 
 1. Fork the repository
