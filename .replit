@@ -1,6 +1,5 @@
 language = "python3"
-run = "pip install -r requirements.txt && python app.py"
+run = "bash start.sh"
 
 [env]
 SECRET_KEY = "your-very-secret-key-here"
-PORT = "8080"
