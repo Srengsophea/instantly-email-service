@@ -158,6 +158,26 @@ Alternatively, you can use the provided update script:
 python update_pythonanywhere.py
 ```
 
+## Fixing Admin Credentials
+
+If you're getting "Invalid admin credentials" error when trying to log in to the admin panel, you can fix this by running the fix_admin_credentials.py script:
+
+1. SSH into your PythonAnywhere account or use the PythonAnywhere console
+
+2. Navigate to your project directory:
+   ```bash
+   cd ~/instantly-email-service
+   ```
+
+3. Run the fix admin credentials script:
+   ```bash
+   python fix_admin_credentials.py
+   ```
+
+This will ensure that the admin user has the correct credentials:
+- Username: khsophea20@gmail.com
+- Password: @Sp18052005
+
 ## Contributing
 
 1. Fork the repository
