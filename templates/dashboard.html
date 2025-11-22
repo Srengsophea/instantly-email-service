@@ -170,6 +170,75 @@
             .generate-section, .recent-emails-section {
                 padding: 1rem;
             }
+            .card-body {
+                padding: 1rem;
+            }
+            .btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.875rem;
+            }
+            .section-title {
+                font-size: 1.25rem;
+            }
+            .display-4 {
+                font-size: 2rem;
+            }
+            .lead {
+                font-size: 1rem;
+            }
+            .email-address-display {
+                font-size: 0.875rem;
+                padding: 0.5rem;
+            }
+            .stats-card {
+                padding: 1rem;
+            }
+            .stats-card h4 {
+                font-size: 1.25rem;
+            }
+            .stats-card i {
+                font-size: 1.5rem;
+            }
+            .card-title {
+                font-size: 1rem;
+            }
+            .d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+            .d-flex > div:last-child {
+                margin-top: 1rem;
+                width: 100%;
+            }
+            .d-flex .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .d-flex .badge {
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container-fluid {
+                padding: 0 0.5rem;
+            }
+            .header-section {
+                padding: 1rem;
+            }
+            .generate-section, .recent-emails-section {
+                padding: 0.75rem;
+            }
+            .form-select, .btn {
+                font-size: 0.875rem;
+                padding: 0.375rem 0.5rem;
+            }
+            .card {
+                margin-bottom: 1rem;
+            }
+            .section-title::after {
+                width: 30px;
+            }
         }
     </style>
 </head>
@@ -234,7 +303,7 @@
                 <div class="generate-section">
                     <h3 class="section-title">Create New Temporary Email</h3>
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-6 mb-3">
                             <label for="domainSelect" class="form-label">Choose Domain:</label>
                             <select class="form-select" id="domainSelect">
                                 {% for domain in domains %}
@@ -242,7 +311,11 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-4 d-flex align-items-end">
+                        <div class="col-md-6 mb-3">
+                            <label for="customUsername" class="form-label">Custom Username (Optional):</label>
+                            <input type="text" class="form-control" id="customUsername" placeholder="Leave blank for auto-generated">
+                        </div>
+                        <div class="col-12">
                             <button id="generateBtn" class="btn btn-primary w-100">
                                 <i class="fas fa-plus me-2"></i>Generate Email
                             </button>
@@ -379,13 +452,19 @@
             // Generate a new temporary email
             generateBtn.addEventListener('click', function() {
                 const selectedDomain = domainSelect.value;
+                const customUsername = document.getElementById('customUsername').value;
+                
+                const requestData = { domain: selectedDomain };
+                if (customUsername.trim() !== '') {
+                    requestData.custom_username = customUsername.trim();
+                }
                 
                 fetch('/generate_email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ domain: selectedDomain })
+                    body: JSON.stringify(requestData)
                 })
                 .then(response => response.json())
                 .then(data => {

@@ -243,6 +243,7 @@ def generate_email():
     user_id = session['user_id']
     data = request.get_json()
     domain = data.get('domain')
+    custom_username = data.get('custom_username')
     
     # If no domain provided, get the first available one
     if not domain:
@@ -252,8 +253,12 @@ def generate_email():
         else:
             domain = 'mail.tm'
     
-    # Generate a unique username and password
-    username = str(uuid.uuid4())[:8]
+    # Use custom username if provided, otherwise generate a unique one
+    if custom_username and custom_username.strip() != '':
+        username = custom_username.strip()
+    else:
+        username = str(uuid.uuid4())[:8]
+    
     password = str(uuid.uuid4())
     email_address = f"{username}@{domain}"
     

@@ -206,6 +206,32 @@
                     <p class="lead">Manage all your temporary email addresses in one place</p>
                 </div>
                 
+                <!-- Generate Email Section -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Create New Temporary Email</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="domainSelect" class="form-label">Choose Domain:</label>
+                                <select class="form-select" id="domainSelect">
+                                    {% for domain in domains %}
+                                        <option value="{{ domain }}">{{ domain }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="customUsername" class="form-label">Custom Username (Optional):</label>
+                                <input type="text" class="form-control" id="customUsername" placeholder="Leave blank for auto-generated">
+                            </div>
+                            <div class="col-12">
+                                <button id="generateBtn" class="btn btn-primary w-100">
+                                    <i class="fas fa-plus me-2"></i>Generate Email
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- All Emails Section -->
                 <div class="all-emails-section">
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -273,6 +299,43 @@
             const inboxEmail = document.getElementById('inboxEmail');
             const inboxMessages = document.getElementById('inboxMessages');
             const closeInbox = document.getElementById('closeInbox');
+            const generateBtn = document.getElementById('generateBtn');
+            const domainSelect = document.getElementById('domainSelect');
+            
+            // Generate a new temporary email
+            if (generateBtn) {
+                generateBtn.addEventListener('click', function() {
+                    const selectedDomain = domainSelect.value;
+                    const customUsername = document.getElementById('customUsername').value;
+                    
+                    const requestData = { domain: selectedDomain };
+                    if (customUsername.trim() !== '') {
+                        requestData.custom_username = customUsername.trim();
+                    }
+                    
+                    fetch('/generate_email', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Email generated successfully!');
+                            // Reload the page to show the new email
+                            location.reload();
+                        } else {
+                            alert('Error generating email: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error generating email');
+                    });
+                });
+            }
             
             // Close inbox
             closeInbox.addEventListener('click', function() {
