@@ -357,12 +357,7 @@
                 document.querySelector('.login-form').style.display = 'block';
             });
             
-            // Switch to admin login form
-            document.getElementById('showLoginFromAdmin').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelector('.admin-login-form').style.display = 'none';
-                document.querySelector('.login-form').style.display = 'block';
-            });
+
             
             // Login form submission
             loginForm.addEventListener('submit', function(e) {
