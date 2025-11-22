@@ -190,7 +190,7 @@ def login():
 def admin_login():
     if request.method == 'GET':
         # Display the admin login form
-        return render_template('index.html')
+        return render_template('admin_login.html')
     else:
         # Handle the POST request for login
         data = request.get_json()

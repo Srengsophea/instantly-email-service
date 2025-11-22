@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Instantly</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 2rem 0;
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+        .header-section h1 {
+            font-weight: 700;
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .header-section p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            max-width: 450px;
+            margin: 2rem auto;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        .auth-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .logo h1 {
+            color: #667eea;
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+        .logo span {
+            color: #764ba2;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-control {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .password-toggle {
+            cursor: pointer;
+            color: #6c757d;
+        }
+        .password-toggle:hover {
+            color: #667eea;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0;
+            }
+            .header-section h1 {
+                font-size: 2rem;
+            }
+            .header-section p {
+                font-size: 1rem;
+            }
+            .auth-container {
+                padding: 1.5rem;
+                margin: 1rem auto;
+            }
+            .form-control {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+            .btn-primary {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 0.5rem;
+            }
+            .header-section h1 {
+                font-size: 1.5rem;
+            }
+            .header-section p {
+                font-size: 0.875rem;
+            }
+            .auth-container {
+                padding: 1rem;
+                margin: 0.5rem auto;
+            }
+            .form-control {
+                padding: 0.375rem 0.5rem;
+                font-size: 0.875rem;
+            }
+            .btn-primary {
+                padding: 0.375rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>Instantly<span>.</span></h1>
+            <p>Admin Panel Access</p>
+        </div>
+        
+        <div class="auth-container">
+            <div class="admin-login-form">
+                <h2 class="text-center mb-4">Admin Login</h2>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="adminLoginUsername" placeholder="Admin Username" required>
+                    </div>
+                    <div class="form-group position-relative">
+                        <input type="password" class="form-control" id="adminLoginPassword" placeholder="Admin Password" required>
+                        <span class="password-toggle position-absolute" id="toggleAdminLoginPassword" style="right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Admin Login</button>
+                </form>
+                <div class="auth-switch text-center mt-3">
+                    <a href="/">Back to User Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleAdminLoginPassword = document.getElementById('toggleAdminLoginPassword');
+            const adminLoginPassword = document.getElementById('adminLoginPassword');
+            
+            toggleAdminLoginPassword.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (adminLoginPassword.type === 'password') {
+                    adminLoginPassword.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    adminLoginPassword.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+            
+            // Admin login form submission
+            document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('adminLoginUsername').value;
+                const password = document.getElementById('adminLoginPassword').value;
+                
+                fetch('/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/admin';
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error logging in as admin');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
