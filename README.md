@@ -103,6 +103,33 @@ SMTPdev/
 - `POST /change_username` - Change user username
 - `POST /delete_email/<email_id>` - Delete email address
 
+## Deploying to PythonAnywhere (Free Hosting)
+
+1. Sign up for a free account at [PythonAnywhere](https://www.pythonanywhere.com/)
+
+2. Clone your GitHub repository in a PythonAnywhere console:
+   ```bash
+   git clone https://github.com/Srengsophea/instantly-email-service.git
+   ```
+
+3. Create a virtual environment and install dependencies:
+   ```bash
+   mkvirtualenv instantly --python=/usr/bin/python3.9
+   pip install -r instantly-email-service/requirements.txt
+   ```
+
+4. Go to the "Web" tab and create a new web app with manual configuration
+
+5. Set the following configuration:
+   - Source code: `/home/srengsophea/instantly-email-service`
+   - Working directory: `/home/srengsophea/instantly-email-service`
+   - Virtual environment: `/home/srengsophea/.virtualenvs/instantly`
+   - WSGI configuration file: Replace the content with the code from `instantly_wsgi.py` in your repository
+
+6. Reload the web app
+
+7. Your application should now be accessible at `https://srengsophea.pythonanywhere.com`
+
 ## Contributing
 
 1. Fork the repository
