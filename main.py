@@ -11,7 +11,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-here')  # In production, use a secure secret key
+app.secret_key = os.getenv('SECRET_KEY', '5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b')  # In production, use a secure secret key
+app.config['SESSION_TYPE'] = 'filesystem'
 
 # Files to store data
 USERS_FILE = 'users.json'
