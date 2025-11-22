@@ -186,22 +186,27 @@ def login():
     
     return jsonify({'success': False, 'error': 'Invalid username or password'})
 
-@app.route('/admin/login', methods=['POST'])
+@app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    
-    if not username or not password:
-        return jsonify({'success': False, 'error': 'Username and password are required'})
-    
-    # Find user and check if admin
-    for user_id, user in users.items():
-        if user['username'] == username and user['password'] == password and user.get('is_admin', False):
-            session['user_id'] = user_id
-            return jsonify({'success': True, 'message': 'Admin login successful'})
-    
-    return jsonify({'success': False, 'error': 'Invalid admin credentials'})
+    if request.method == 'GET':
+        # Display the admin login form
+        return render_template('index.html')
+    else:
+        # Handle the POST request for login
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+        
+        if not username or not password:
+            return jsonify({'success': False, 'error': 'Username and password are required'})
+        
+        # Find user and check if admin
+        for user_id, user in users.items():
+            if user['username'] == username and user['password'] == password and user.get('is_admin', False):
+                session['user_id'] = user_id
+                return jsonify({'success': True, 'message': 'Admin login successful'})
+        
+        return jsonify({'success': False, 'error': 'Invalid admin credentials'})
 
 @app.route('/logout')
 def logout():

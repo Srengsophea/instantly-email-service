@@ -255,6 +255,9 @@
                         <div class="auth-switch">
                             Don't have an account? <a href="#" id="showSignup">Sign Up</a>
                         </div>
+                        <div class="auth-switch">
+                            <a href="/admin/login">Admin Login</a>
+                        </div>
                     </div>
                     
                     <div class="signup-form" style="display: none;">
@@ -273,6 +276,25 @@
                         </form>
                         <div class="auth-switch">
                             Already have an account? <a href="#" id="showLogin">Sign In</a>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-login-form" style="display: none;">
+                        <h2 class="text-center mb-4">Admin Login</h2>
+                        <form id="adminLoginForm">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="adminLoginUsername" placeholder="Admin Username" required>
+                            </div>
+                            <div class="form-group position-relative">
+                                <input type="password" class="form-control" id="adminLoginPassword" placeholder="Admin Password" required>
+                                <span class="password-toggle position-absolute" id="toggleAdminLoginPassword" style="right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Admin Login</button>
+                        </form>
+                        <div class="auth-switch">
+                            <a href="#" id="showLoginFromAdmin">Back to User Login</a>
                         </div>
                     </div>
                 </div>
@@ -303,6 +325,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if we should show the admin login form
+            if (window.location.pathname === '/admin/login') {
+                document.querySelector('.login-form').style.display = 'none';
+                document.querySelector('.admin-login-form').style.display = 'block';
+            }
             const loginForm = document.getElementById('loginForm');
             const signupForm = document.getElementById('signupForm');
             const showSignup = document.getElementById('showSignup');
@@ -314,6 +341,9 @@
             
             const toggleSignupPassword = document.getElementById('toggleSignupPassword');
             const signupPassword = document.getElementById('signupPassword');
+            
+            const toggleAdminLoginPassword = document.getElementById('toggleAdminLoginPassword');
+            const adminLoginPassword = document.getElementById('adminLoginPassword');
             
             toggleLoginPassword.addEventListener('click', function() {
                 const icon = this.querySelector('i');
@@ -341,6 +371,19 @@
                 }
             });
             
+            toggleAdminLoginPassword.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (adminLoginPassword.type === 'password') {
+                    adminLoginPassword.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    adminLoginPassword.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+            
             // Switch between login and signup forms
             showSignup.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -351,6 +394,13 @@
             showLogin.addEventListener('click', function(e) {
                 e.preventDefault();
                 document.querySelector('.signup-form').style.display = 'none';
+                document.querySelector('.login-form').style.display = 'block';
+            });
+            
+            // Switch to admin login form
+            document.getElementById('showLoginFromAdmin').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('.admin-login-form').style.display = 'none';
                 document.querySelector('.login-form').style.display = 'block';
             });
             
@@ -407,6 +457,34 @@
                 .catch(error => {
                     console.error('Error:', error);
                     alert('Error signing up');
+                });
+            });
+            
+            // Admin login form submission
+            document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('adminLoginUsername').value;
+                const password = document.getElementById('adminLoginPassword').value;
+                
+                fetch('/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/admin';
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error logging in as admin');
                 });
             });
         });
