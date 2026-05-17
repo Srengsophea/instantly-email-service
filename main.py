@@ -562,6 +562,80 @@ def get_inbox(email_id):
     except Exception as e:
         return jsonify({'success': True, 'messages': []})
 
+@app.route('/get_message/<email_id>/<message_id>')
+@login_required
+def get_message(email_id, message_id):
+    user_id = session['user_id']
+    try:
+        global email_accounts
+        email_accounts = load_email_accounts()
+        
+        # Find the email account and verify ownership
+        email_account = None
+        for account in email_accounts:
+            if account['id'] == email_id and account.get('user_id') == user_id:
+                email_account = account
+                break
+        
+        if not email_account:
+            return jsonify({'success': False, 'error': 'Email account not found or access denied'})
+        
+        # Use Mail.tm API to get specific message
+        headers = {
+            'Authorization': f'Bearer {email_account["token"]}',
+            'Content-Type': 'application/json'
+        }
+        
+        response = requests.get(
+            f'{MAIL_TM_API_URL}/messages/{message_id}',
+            headers=headers
+        )
+        
+        if response.status_code == 200:
+            return jsonify({'success': True, 'message': response.json()})
+        else:
+            return jsonify({'success': False, 'error': f'Failed to fetch message: {response.status_code}'})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/admin/get_message/<email_id>/<message_id>')
+@admin_required
+def admin_get_message(email_id, message_id):
+    try:
+        global email_accounts
+        email_accounts = load_email_accounts()
+        
+        # Find the email account
+        email_account = None
+        for account in email_accounts:
+            if account['id'] == email_id:
+                email_account = account
+                break
+        
+        if not email_account:
+            return jsonify({'success': False, 'error': 'Email account not found'})
+        
+        # Use Mail.tm API to get specific message
+        headers = {
+            'Authorization': f'Bearer {email_account["token"]}',
+            'Content-Type': 'application/json'
+        }
+        
+        response = requests.get(
+            f'{MAIL_TM_API_URL}/messages/{message_id}',
+            headers=headers
+        )
+        
+        if response.status_code == 200:
+            return jsonify({'success': True, 'message': response.json()})
+        else:
+            return jsonify({'success': False, 'error': f'Failed to fetch message: {response.status_code}'})
+            
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+
 if __name__ == '__main__':
     # Only run the development server if not on PythonAnywhere
     if 'PYTHONANYWHERE_DOMAIN' not in os.environ:

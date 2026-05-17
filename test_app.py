@@ -97,12 +97,21 @@ class TestApp(unittest.TestCase):
         data = response.get_json()
         self.assertIn('emails', data)
 
+    @patch('main.load_email_accounts')
     @patch('main.requests.get')
-    def test_get_inbox(self, mock_get):
+    def test_get_inbox(self, mock_get, mock_load):
         """Test getting inbox for an email address"""
         # Login first
         with self.app.session_transaction() as sess:
             sess['user_id'] = 'test_user_id'
+        
+        # Mock load_email_accounts
+        mock_load.return_value = [{
+            'id': 'test_id',
+            'user_id': 'test_user_id',
+            'address': 'test@example.com',
+            'token': 'test_token'
+        }]
         
         # Mock the API response
         mock_response = Mock()
@@ -120,23 +129,48 @@ class TestApp(unittest.TestCase):
         }
         mock_get.return_value = mock_response
         
-        # First, add a test email account to the in-memory storage
-        with self.app.application.app_context():
-            from main import email_accounts
-            email_accounts.append({
-                'id': 'test_id',
-                'user_id': 'test_user_id',
-                'address': 'test@example.com',
-                'token': 'test_token'
-            })
-        
         response = self.app.get('/get_inbox/test_id')
         self.assertEqual(response.status_code, 200)
         
         data = response.get_json()
-        # The test is failing because we're not properly mocking the email account lookup
-        # Let's just check that we get a response
-        self.assertIn('success', data)
+        self.assertTrue(data['success'])
+
+    @patch('main.load_email_accounts')
+    @patch('main.requests.get')
+    def test_get_message(self, mock_get, mock_load):
+        """Test getting a specific email message details"""
+        # Login first
+        with self.app.session_transaction() as sess:
+            sess['user_id'] = 'test_user_id'
+        
+        # Mock load_email_accounts
+        mock_load.return_value = [{
+            'id': 'test_id',
+            'user_id': 'test_user_id',
+            'address': 'test@example.com',
+            'token': 'test_token'
+        }]
+        
+        # Mock the API response for specific message details
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            'id': 'msg_1',
+            'from': {'address': 'sender@example.com'},
+            'subject': 'Test Message Details',
+            'text': 'Full email body details',
+            'html': ['<p>Full email body details</p>'],
+            'createdAt': '2023-01-01T12:00:00.000Z'
+        }
+        mock_get.return_value = mock_response
+        
+        response = self.app.get('/get_message/test_id/msg_1')
+        self.assertEqual(response.status_code, 200)
+        
+        data = response.get_json()
+        self.assertTrue(data['success'])
+        self.assertEqual(data['message']['id'], 'msg_1')
+        self.assertEqual(data['message']['subject'], 'Test Message Details')
 
 if __name__ == '__main__':
     unittest.main()

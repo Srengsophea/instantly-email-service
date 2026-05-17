@@ -709,8 +709,8 @@
                                 if (data.messages && data.messages.length > 0) {
                                     let html = '';
                                     data.messages.forEach(message => {
-                                        // Extract text content from HTML if available
-                                        let content = message.text || 'No content';
+                                        // Mail.tm API only returns 'intro' preview in messages list, not full body text/html
+                                        let content = message.intro || message.text || 'No content';
                                         if (message.html && message.html.length > 0) {
                                             content = message.html[0] || content;
                                         }
@@ -720,12 +720,26 @@
                                                 <h5>${message.subject || 'No Subject'}</h5>
                                                 <p><strong>From:</strong> ${message.from ? message.from.address : 'Unknown'}</p>
                                                 <p>${content.substring(0, 200)}${content.length > 200 ? '...' : ''}</p>
-                                                <small class="text-muted">${new Date(message.createdAt).toLocaleString() || ''}</small>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <button class="btn btn-sm btn-primary view-full-email" data-email-id="${emailId}" data-message-id="${message.id}">
+                                                        <i class="fas fa-envelope-open me-1"></i>View Full Email
+                                                    </button>
+                                                    <small class="text-muted">${new Date(message.createdAt).toLocaleString() || ''}</small>
+                                                </div>
                                             </div>
                                             <hr>
                                         `;
                                     });
                                     inboxMessages.innerHTML = html;
+
+                                    // Add listeners to View Full Email buttons
+                                    document.querySelectorAll('.view-full-email').forEach(btn => {
+                                        btn.addEventListener('click', function() {
+                                            const emailId = this.getAttribute('data-email-id');
+                                            const msgId = this.getAttribute('data-message-id');
+                                            openEmailModal(emailId, msgId);
+                                        });
+                                    });
                                 } else {
                                     inboxMessages.innerHTML = `
                                         <div class="text-center py-5">
@@ -883,6 +897,67 @@
                         console.error('Error:', error);
                         alert('Error changing password');
                     });
+            // View full email modal function
+            window.openEmailModal = function(emailId, msgId) {
+                const viewEmailModal = new bootstrap.Modal(document.getElementById('viewEmailModal'));
+                const loading = document.getElementById('emailDetailsLoading');
+                const content = document.getElementById('emailDetailsContent');
+                const subject = document.getElementById('emailSubject');
+                const from = document.getElementById('emailFrom');
+                const to = document.getElementById('emailTo');
+                const date = document.getElementById('emailDate');
+                const iframe = document.getElementById('emailBodyIframe');
+                const textDiv = document.getElementById('emailBodyText');
+                
+                loading.style.display = 'block';
+                content.style.display = 'none';
+                viewEmailModal.show();
+                
+                fetch(`/get_message/${emailId}/${msgId}`)
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    content.style.display = 'block';
+                    
+                    if (data.success) {
+                        const msg = data.message;
+                        subject.textContent = msg.subject || 'No Subject';
+                        from.textContent = msg.from ? (msg.from.name || '') + ' <' + msg.from.address + '>' : 'Unknown';
+                        to.textContent = msg.to ? msg.to.map(t => t.address).join(', ') : '';
+                        date.textContent = new Date(msg.createdAt).toLocaleString();
+                        
+                        if (msg.html && msg.html.length > 0) {
+                            iframe.style.display = 'block';
+                            textDiv.style.display = 'none';
+                            
+                            // Safe injection using iframe srcdoc to isolate styling
+                            iframe.srcdoc = msg.html[0];
+                        } else {
+                            iframe.style.display = 'none';
+                            textDiv.style.display = 'block';
+                            textDiv.textContent = msg.text || 'No content';
+                        }
+                    } else {
+                        subject.textContent = 'Error';
+                        from.textContent = '';
+                        to.textContent = '';
+                        date.textContent = '';
+                        iframe.style.display = 'none';
+                        textDiv.style.display = 'block';
+                        textDiv.textContent = 'Failed to load email: ' + data.error;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loading.style.display = 'none';
+                    content.style.display = 'block';
+                    subject.textContent = 'Error';
+                    from.textContent = '';
+                    to.textContent = '';
+                    date.textContent = '';
+                    iframe.style.display = 'none';
+                    textDiv.style.display = 'block';
+                    textDiv.textContent = 'Error loading email.';
                 });
             }
         });
@@ -924,6 +999,44 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" id="savePasswordBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Email Modal -->
+    <div class="modal fade" id="viewEmailModal" tabindex="-1" aria-labelledby="viewEmailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewEmailModalLabel"><i class="fas fa-envelope-open text-primary me-2"></i>Email Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="emailDetailsLoading" class="text-center py-5">
+                        <i class="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+                        <h5>Loading email content...</h5>
+                    </div>
+                    <div id="emailDetailsContent" style="display: none;">
+                        <h4 id="emailSubject" class="mb-3 fw-bold text-dark"></h4>
+                        <div class="d-flex justify-content-between mb-3 text-muted border-bottom pb-2" style="font-size: 0.9rem;">
+                            <div>
+                                <strong>From:</strong> <span id="emailFrom" class="text-dark"></span><br>
+                                <strong>To:</strong> <span id="emailTo" class="text-dark"></span>
+                            </div>
+                            <div class="text-end">
+                                <span id="emailDate"></span>
+                            </div>
+                        </div>
+                        <div class="border rounded p-3 bg-light">
+                            <!-- We use an iframe to safely render the HTML layout of the email -->
+                            <iframe id="emailBodyIframe" style="width: 100%; height: 450px; border: none; display: none; background: white;"></iframe>
+                            <div id="emailBodyText" style="white-space: pre-wrap; display: none; background: white; padding: 15px; border-radius: 5px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary shadow-sm" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
