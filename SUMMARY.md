@@ -28,7 +28,7 @@ This project implements a temporary email generator with Mail.tm API functionali
 ## File Structure
 ```
 SMTPdev/
-├── app.py              # Main Flask application
+├── main.py             # Main Flask application
 ├── init.py             # Initialization script
 ├── requirements.txt    # Python dependencies
 ├── .env.example        # Example environment configuration
@@ -52,7 +52,7 @@ SMTPdev/
 
 2. **Run**:
    ```bash
-   python app.py
+   python main.py
    ```
 
 3. **Access**:
@@ -60,7 +60,7 @@ SMTPdev/
 
 ## Customization Options
 
-- **Domains**: Modify the `domains` list in `app.py` to add/remove domain choices
+- **Domains**: Modify the `domains` list in `main.py` to add/remove domain choices
 - **UI**: Customize the Bootstrap theme or add new features in `index.html`
 
 ## Possible Extensions

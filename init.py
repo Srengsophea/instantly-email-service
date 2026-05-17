@@ -45,7 +45,7 @@ def main():
     
     print("\nSetup complete!")
     print("Next steps:")
-    print("1. Run 'python app.py' to start the application")
+    print("1. Run 'python main.py' to start the application")
     print("2. Visit http://localhost:5000 in your browser")
 
 if __name__ == "__main__":

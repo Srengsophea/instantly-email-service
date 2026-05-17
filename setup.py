@@ -61,7 +61,7 @@ def main():
     print("\nSetup complete!")
     print("Next steps:")
     print("1. Update the SECRET_KEY in .env with a strong secret key")
-    print("2. Run 'python app.py' to start the application")
+    print("2. Run 'python main.py' to start the application")
     print("3. Visit http://localhost:5000 in your browser")
 
 if __name__ == "__main__":

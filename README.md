@@ -59,7 +59,7 @@ A Flask-based web application that allows users to create temporary email addres
 
 2. Run the Flask application:
    ```bash
-   python app.py
+   python main.py
    ```
 
 3. Open your web browser and navigate to `http://127.0.0.1:5000`
@@ -80,7 +80,7 @@ SMTPdev/
 │   ├── index.html
 │   ├── my_emails.html
 │   └── profile.html
-├── app.py
+├── main.py
 ├── users.json
 ├── email_accounts.json
 ├── requirements.txt

@@ -15,7 +15,7 @@ class TestApp(unittest.TestCase):
     def setUp(self):
         """Set up test environment"""
         # Import the app
-        from app import app
+        from main import app
         self.app = app.test_client()
         self.app.testing = True
 
@@ -25,8 +25,8 @@ class TestApp(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertIn(b'Instantly', result.data)
 
-    @patch('app.requests.post')
-    @patch('app.requests.get')
+    @patch('main.requests.post')
+    @patch('main.requests.get')
     def test_signup_and_login(self, mock_get, mock_post):
         """Test user signup and login"""
         # Test signup with a unique username
@@ -48,8 +48,8 @@ class TestApp(unittest.TestCase):
         data = response.get_json()
         self.assertTrue(data['success'])
 
-    @patch('app.requests.post')
-    @patch('app.requests.get')
+    @patch('main.requests.post')
+    @patch('main.requests.get')
     def test_generate_email(self, mock_get, mock_post):
         """Test email generation endpoint"""
         # First login
@@ -97,7 +97,7 @@ class TestApp(unittest.TestCase):
         data = response.get_json()
         self.assertIn('emails', data)
 
-    @patch('app.requests.get')
+    @patch('main.requests.get')
     def test_get_inbox(self, mock_get):
         """Test getting inbox for an email address"""
         # Login first
@@ -122,7 +122,7 @@ class TestApp(unittest.TestCase):
         
         # First, add a test email account to the in-memory storage
         with self.app.application.app_context():
-            from app import email_accounts
+            from main import email_accounts
             email_accounts.append({
                 'id': 'test_id',
                 'user_id': 'test_user_id',

@@ -9,7 +9,10 @@ from datetime import datetime
 import uuid
 
 # Load existing users
-users_file = 'users.json'
+DATA_DIR = os.getenv('DATA_DIR', '.')
+if DATA_DIR and DATA_DIR != '.':
+    os.makedirs(DATA_DIR, exist_ok=True)
+users_file = os.path.join(DATA_DIR, 'users.json')
 
 if os.path.exists(users_file):
     with open(users_file, 'r') as f:

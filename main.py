@@ -15,8 +15,11 @@ app.secret_key = os.getenv('SECRET_KEY', '5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a
 app.config['SESSION_TYPE'] = 'filesystem'
 
 # Files to store data
-USERS_FILE = 'users.json'
-EMAIL_ACCOUNTS_FILE = 'email_accounts.json'
+DATA_DIR = os.getenv('DATA_DIR', '.')
+if DATA_DIR and DATA_DIR != '.':
+    os.makedirs(DATA_DIR, exist_ok=True)
+USERS_FILE = os.path.join(DATA_DIR, 'users.json')
+EMAIL_ACCOUNTS_FILE = os.path.join(DATA_DIR, 'email_accounts.json')
 
 # Mail.tm API configuration
 MAIL_TM_API_URL = os.getenv('MAIL_TM_API_URL', 'https://api.mail.tm')
