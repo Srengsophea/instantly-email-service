@@ -457,9 +457,14 @@ def generate_email():
     
     # Use custom username if provided, otherwise generate a unique one
     if custom_username and custom_username.strip() != '':
-        username = custom_username.strip()
+        # Sanitize custom username: convert to lowercase and remove non-alphanumeric chars
+        import re
+        clean_username = re.sub(r'[^a-zA-Z0-9]', '', custom_username.strip()).lower()
+        if len(clean_username) < 3:
+            return jsonify({'success': False, 'error': 'Custom username must be at least 3 alphanumeric characters'})
+        username = clean_username
     else:
-        username = str(uuid.uuid4())[:8]
+        username = str(uuid.uuid4())[:8].lower()
     
     password = str(uuid.uuid4())
     email_address = f"{username}@{domain}"
@@ -505,9 +510,28 @@ def generate_email():
                 
                 return jsonify({'success': True, 'email': email_obj})
             else:
-                return jsonify({'success': False, 'error': 'Failed to get authentication token'})
+                if token_response.status_code == 429:
+                    return jsonify({'success': False, 'error': 'Rate limit exceeded by the temporary email provider. Please wait 1-2 minutes before trying again.'})
+                return jsonify({'success': False, 'error': f'Failed to get authentication token (API status code {token_response.status_code})'})
         else:
-            return jsonify({'success': False, 'error': 'Failed to create email account'})
+            if response.status_code == 429:
+                return jsonify({'success': False, 'error': 'Rate limit exceeded by the temporary email provider. Please wait 1-2 minutes before trying again.'})
+            elif response.status_code == 422:
+                try:
+                    err_data = response.json()
+                    detail = err_data.get('detail') or err_data.get('hydra:description') or 'Username already taken or invalid'
+                    if 'already used' in detail:
+                        detail = 'This email address is already taken. Please try a different username.'
+                    return jsonify({'success': False, 'error': detail})
+                except Exception:
+                    return jsonify({'success': False, 'error': 'This email address is already taken or invalid.'})
+            else:
+                try:
+                    err_data = response.json()
+                    detail = err_data.get('detail') or 'Failed to create email account'
+                    return jsonify({'success': False, 'error': f'{detail} (API status code {response.status_code})'})
+                except Exception:
+                    return jsonify({'success': False, 'error': f'Failed to create email account (API status code {response.status_code})'})
             
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
