@@ -15,9 +15,16 @@ class TestApp(unittest.TestCase):
     def setUp(self):
         """Set up test environment"""
         # Import the app
-        from main import app
+        from main import app, users
         self.app = app.test_client()
-        self.app.testing = True
+        # Add test user to users database to prevent session clearing redirect guards
+        users['test_user_id'] = {
+            'id': 'test_user_id',
+            'username': 'testuser',
+            'password': 'testpass',
+            'created_at': '2026-05-17 00:00:00',
+            'is_admin': True
+        }
 
     def test_index_page(self):
         """Test that the index page loads correctly"""

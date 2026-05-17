@@ -96,6 +96,9 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('index'))
+        if session['user_id'] not in users:
+            session.clear()
+            return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -103,6 +106,9 @@ def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
+            return redirect(url_for('index'))
+        if session['user_id'] not in users:
+            session.clear()
             return redirect(url_for('index'))
         user = users.get(session['user_id'], {})
         if not user.get('is_admin', False):
@@ -114,6 +120,9 @@ def admin_required(f):
 def index():
     if 'user_id' in session:
         user_id = session['user_id']
+        if user_id not in users:
+            session.clear()
+            return render_template('index.html')
         user = users.get(user_id, {})
         user_emails = [email for email in email_accounts if email.get('user_id') == user_id]
         # Get only the last 5 emails for the dashboard
